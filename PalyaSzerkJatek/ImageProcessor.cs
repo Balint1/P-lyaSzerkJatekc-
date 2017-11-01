@@ -41,20 +41,30 @@ namespace PalyaSzerkJatek
             while (true)
             {
             cap.Read(frame);
-            process(frame);
-                    foreach (Point[] contour in contours)
-                    {
-                        Point[] appr = Cv2.ApproxPolyDP(contour, 3, false);
-                        if (/*Cv2.ContourArea(appr, false) > 1 && */appr.Length == 4)
-                            drawShape(frame, appr, Scalar.Green);
-                    }
-                    CaptureChanged(frame,thresholded);
+            thresholded = process(frame);
+            frame = findPoly(frame);
+            CaptureChanged(frame,thresholded);
             
             }
             CaptureChanged(frame, process(frame));
 
 
         }
+
+        private Mat findPoly(Mat frame)
+        {
+            foreach (Point[] contour in contours)
+            {
+                Point[] walls = Cv2.ApproxPolyDP(contour, 5.2, false);
+                if ((Cv2.ContourArea(walls, false) > 1000 && walls.Length < 9) || walls.Length < 4)
+                    drawShape(frame, walls, Scalar.Green);
+                Point[] shapes = Cv2.ApproxPolyDP(contour, 5.2, true);
+                if (Cv2.ContourArea(shapes, false) < 1000 && shapes.Length < 5 && shapes.Length > 2)
+                    drawShape(frame, shapes, Scalar.Blue);
+            }
+            return frame;
+        }
+
         public void startCapture(string mode)
         {
             camera = new Thread(() => capture(mode));
@@ -80,7 +90,7 @@ namespace PalyaSzerkJatek
         public Mat findContours(Mat thresholded,Mat frame)
         {
             HierarchyIndex[] hierarchy;
-            Cv2.FindContours(thresholded,out contours,out hierarchy, RetrievalModes.List, ContourApproximationModes.ApproxTC89L1);
+            Cv2.FindContours(thresholded,out contours,out hierarchy, RetrievalModes.List, ContourApproximationModes.ApproxNone);
            
             Mat ret = new Mat();
            // frame.CopyTo(ret);
@@ -101,6 +111,7 @@ namespace PalyaSzerkJatek
                  if (i != count - 1)
                     Cv2.Line(img, approx[i].X, approx[i].Y, approx[i + 1].X, approx[i + 1].Y, color, 3);
                   else Cv2.Line(img, approx[i].X, approx[i].Y, approx[0].X, approx[0].Y, color, 3);
+                Cv2.Circle(img, approx[i], 4, Scalar.Red,3);
 
 
             }
