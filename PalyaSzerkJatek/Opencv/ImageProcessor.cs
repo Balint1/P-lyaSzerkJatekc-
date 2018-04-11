@@ -9,21 +9,35 @@ using System.Threading.Tasks;
 
 namespace PalyaSzerkJatek
 {
-    class ImageProcessor
+    /// <summary>
+    /// Alakzatok felismerését végző osztály
+    /// </summary>
+    public class ImageProcessor
     {
         public static readonly string LOAD_IMG = "img";
         public static readonly string LOAD_FROM_CAMERA = "cam";
         private OpenCvSharp.Point[][] contours ;
         private Thread camera;
         VideoCapture cap;
+        /// <summary>
+        /// Felismerés után kinyert információk
+        /// </summary>
+        /// <param name="frame"> Eredeti kép </param>
+        /// <param name="Thresholded">Thresholded kép  </param>
+        /// <param name="walls">Falak listája</param>
+        /// <param name="gems">Gyémántok listája</param>
         public delegate void CaptureEventHandler(Mat frame, Mat Thresholded, List<Wall> walls, List<Gem> gems);
-        //public delegate void CaptureEventHandler(Mat frame, IEnumerable<Wall> walls,IEnumerable<Gem> gems);
-        public event CaptureEventHandler CaptureChanged;
         private Mat thresholded = new Mat();
-
+        /// <summary>
+        /// Elsütődik minden egyes képkockánál
+        /// </summary>
+        public event CaptureEventHandler CaptureChanged;
          
         private int thresholdNum = 120;
 
+        /// <summary>
+        /// Felismerés előtt használt treshold érték
+        /// </summary>
         public int ThresholdNum
         {
             get { return thresholdNum ; }
@@ -35,7 +49,7 @@ namespace PalyaSzerkJatek
         }
         private List<Wall> wallObjects = new List<Wall>();
         private List<Gem> gemObjects = new List<Gem>();
-
+        
         public void capture(string mode)
         {
             Mat frame = new Mat();
@@ -127,11 +141,18 @@ namespace PalyaSzerkJatek
             return frame;
         }
 
+        /// <summary>
+        /// Felismerés elkezdése egy új szálon
+        /// </summary>
+        /// <param name="mode"> Videó vagy Kép készítése </param>
         public void startCapture(string mode)
         {
             camera = new Thread(() => capture(mode));
             camera.Start();
         }
+        /// <summary>
+        /// Felismerés leállítása
+        /// </summary>
         public void stopCapture()
         {
             camera.Abort();
