@@ -19,12 +19,10 @@ namespace PalyaSzerkJatek
         {
             InitializeComponent();
         }
+
         ImageProcessor ip;
         private void Form1_Load(object sender, EventArgs e)
         {
-            // pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            //pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-
             ip = new ImageProcessor();
             ip.CaptureChanged += myEventHandler;
             ip.startCapture(ImageProcessor.LOAD_FROM_CAMERA);
