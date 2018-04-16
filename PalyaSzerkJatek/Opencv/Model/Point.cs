@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PalyaSzerkJatek
 {
-    public class Point
+    public class Point1
     {
         public int X { get; set; }
 
