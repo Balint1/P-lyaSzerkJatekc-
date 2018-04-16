@@ -64,7 +64,7 @@ namespace PalyaSzerkJatek
                 case "cam":
                    
                     cap = new VideoCapture();
-                    cap.Open(1);
+                    cap.Open(0);
                     cap.Set(CaptureProperty.FrameWidth, 1920);
                     cap.Set(CaptureProperty.FrameHeight, 1080);
                     break;
@@ -76,7 +76,6 @@ namespace PalyaSzerkJatek
             if (success)
             {
             thresholded = process(frame);
-            
             frame = findPoly(frame);
             CaptureChanged(frame,thresholded,wallObjects, gemObjects);
             wallObjects.Clear();
