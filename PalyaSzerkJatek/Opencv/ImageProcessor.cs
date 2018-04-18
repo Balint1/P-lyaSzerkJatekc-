@@ -97,10 +97,10 @@ namespace PalyaSzerkJatek
                 OpenCvSharp.Point[] walls = Cv2.ApproxPolyDP(contour, 5.2, true);
                 if (Cv2.ContourArea(walls, false) > 10000 && walls.Length < 25) {
                     drawShape(frame, walls, Scalar.Green);
-                    //setLabel(frame, $"{Cv2.ContourArea(walls,false) / 1000 }", walls);
+                 
 
                     wallObjects.AddRange( Converter.ContourToWall( walls ) );
-                        //Converter.ContourToWall(walls) );
+                     
                     
                 }
                 OpenCvSharp.Point[] shapes = Cv2.ApproxPolyDP(contour, 6.2, true);
@@ -122,14 +122,19 @@ namespace PalyaSzerkJatek
                     {
                     drawShape(frame, shapes, Scalar.GreenYellow);
                     wallObjects.AddRange( Converter.ContourToWall( shapes ) );
+                    
 
                     }
                     else
                     {
                     Gem gemObject = Converter.ContourToGem(shapes);
-                    if( !gemObjects.Any( g => Math.Abs(g.Position.X - gemObject.Position.X) < 10 && Math.Abs(g.Position.Y - gemObject.Position.Y) < 10))
-                    gemObjects.Add(gemObject);
-                    drawShape(frame, shapes, Scalar.Blue);
+                    if( !gemObjects.Any( g => Math.Abs(g.Position.X - gemObject.Position.X) < 50 && Math.Abs(g.Position.Y - gemObject.Position.Y) < 50))
+                        {
+                            gemObjects.Add(gemObject);
+                            drawShape(frame, shapes, Scalar.Blue);
+                        }
+
+                    
                     }
                 
                     //if(Cv2.ContourArea(shapes, false) < 3000)
