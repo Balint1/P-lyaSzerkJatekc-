@@ -35,6 +35,8 @@ namespace PalyaSzerkJatek
             ip = new ImageProcessor();
             ip.CaptureChanged += myEventHandler;
             ip.startCapture(ImageProcessor.LOAD_FROM_CAMERA);
+            ip.FrameWidth = 40;
+            label2.Text = "" + ip.FrameWidth;
             currentWalls = new Wall[]
             {
                 new Wall { StartPosition = new Point() { X = 100, Y = 100 },   EndPosition = new Point() { X = 600, Y = 700 } },
@@ -48,6 +50,7 @@ namespace PalyaSzerkJatek
                 new Gem { Position = new Point { X = 100, Y = 100 } },
                 new Gem { Position = new Point { X = 100, Y = 100 } },
             };
+            
         }
 
       
@@ -160,6 +163,12 @@ namespace PalyaSzerkJatek
                 textBox1.Text = "Level1";
                 
             SaveToTxt( textBox1.Text );
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            ip.FrameWidth = trackBar2.Value;
+            label2.Text = "" + trackBar2.Value;
         }
     }
 }

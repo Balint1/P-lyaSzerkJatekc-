@@ -92,6 +92,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\ImageProcessor.datasource" />
+    <None Include="Properties\DataSources\OpenCvSharp.UserInterface.TrackbarWithLabel.datasource" />
+    <None Include="Properties\DataSources\PalyaSzerkJatek.Properties.Resources.datasource" />
+    <None Include="Properties\DataSources\PalyaSzerkJatek.Properties.Settings.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

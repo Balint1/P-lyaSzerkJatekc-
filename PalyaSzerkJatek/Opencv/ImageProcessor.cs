@@ -14,6 +14,10 @@ namespace PalyaSzerkJatek
     /// </summary>
     public class ImageProcessor
     {
+        private const int CaptureWidth = 1920;
+        private const int CaptureHeight = 1080;
+      //  private const int FrameWidth = 40;
+
         public static readonly string LOAD_IMG = "img";
         public static readonly string LOAD_FROM_CAMERA = "cam";
         private OpenCvSharp.Point[][] contours ;
@@ -47,6 +51,8 @@ namespace PalyaSzerkJatek
                 thresholdNum = value;
             }
         }
+
+        public int FrameWidth { get; set; }
         private List<Wall> wallObjects = new List<Wall>();
         private List<Gem> gemObjects = new List<Gem>();
         
@@ -65,8 +71,8 @@ namespace PalyaSzerkJatek
                    
                     cap = new VideoCapture();
                     cap.Open(0);
-                    cap.Set(CaptureProperty.FrameWidth, 1920);
-                    cap.Set(CaptureProperty.FrameHeight, 1080);
+                    cap.Set(CaptureProperty.FrameWidth, CaptureWidth);
+                    cap.Set(CaptureProperty.FrameHeight, CaptureHeight);
                     break;
             }
             if(cap != null)
@@ -75,8 +81,10 @@ namespace PalyaSzerkJatek
             bool success = cap.Read(frame);
             if (success)
             {
+           
             thresholded = process(frame);
             frame = findPoly(frame);
+            DrawRectangle(frame, new Rect(FrameWidth, FrameWidth,CaptureWidth - 2 * FrameWidth, CaptureHeight - 2 * FrameWidth));
             CaptureChanged(frame,thresholded,wallObjects, gemObjects);
             wallObjects.Clear();
             gemObjects.Clear();
@@ -95,16 +103,15 @@ namespace PalyaSzerkJatek
                 //var lines = Cv2.HoughLines(frame, 0.4, 1, 120);
                 
                 OpenCvSharp.Point[] walls = Cv2.ApproxPolyDP(contour, 5.2, true);
-                if (Cv2.ContourArea(walls, false) > 10000 && walls.Length < 25) {
-                    drawShape(frame, walls, Scalar.Green);
-                 
+                if (!walls.Any(w => w.X < FrameWidth || w.X > CaptureWidth - FrameWidth || w.Y < FrameWidth || w.Y > CaptureHeight - FrameWidth))
+                    if (Cv2.ContourArea(walls, false) > 10000 && walls.Length < 25 ) {
 
-                    wallObjects.AddRange( Converter.ContourToWall( walls ) );
-                     
-                    
+                        drawShape(frame, walls, Scalar.Green);
+                        wallObjects.AddRange(Converter.ContourToWall(walls));
                 }
                 OpenCvSharp.Point[] shapes = Cv2.ApproxPolyDP(contour, 6.2, true);
-                if (Cv2.ContourArea(shapes, false) < 10000 && Cv2.ContourArea(shapes, false) >  500 && shapes.Length <= 5 && shapes.Length > 2) {
+                if (!shapes.Any(w => w.X < FrameWidth || w.X > CaptureWidth - FrameWidth || w.Y < FrameWidth || w.Y > CaptureHeight - FrameWidth))
+                    if (Cv2.ContourArea(shapes, false) < 10000 && Cv2.ContourArea(shapes, false) >  500 && shapes.Length <= 5 && shapes.Length > 2) {
                 
                     List<double> cos = new List<double>();
                     for (int j = 2; j < shapes.Length + 1; j++)
@@ -230,6 +237,24 @@ namespace PalyaSzerkJatek
             double dx2 = pt2.X - pt0.X;
             double dy2 = pt2.Y - pt0.Y;
             return (dx1 * dx2 + dy1 * dy2) / Math.Sqrt((dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2) + 1e-10);
+        }
+
+        Mat cropFrame(Mat input)
+        {
+            Rect cropRect = new Rect(40, 40, 1880, 1040);
+            return new Mat(input, cropRect);
+        }
+
+        private void DrawRectangle(Mat pic,Rect rect)
+        {
+            Point[] corners = new Point[] 
+            {
+                new Point(rect.Left,rect.Top),
+                new Point(rect.Right,rect.Top),
+                new Point(rect.Right,rect.Bottom),
+                new Point(rect.Left,rect.Bottom),
+            };
+            drawShape(pic, corners, new Scalar(40, 255, 0));
         }
     }
 }
