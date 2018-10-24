@@ -12,12 +12,15 @@ namespace PalyaSzerkJatek
     /// <summary>
     /// Alakzatok felismerését végző osztály
     /// </summary>
-    public class ImageProcessor
-    {
-        private const int CaptureWidth = 1920;
-        private const int CaptureHeight = 1080;
-      //  private const int FrameWidth = 40;
+    public class ImageProcessor : IDisposable
+    { 
 
+        public int CaptureWidth { get; set; } = 1280;
+
+        public int CaptureHeight { get; set; } = 720;
+        public int CameraIndex { get; set; }
+        //  private const int FrameWidth = 40;
+        public string ImgPath { get; set; }
         public static readonly string LOAD_IMG = "img";
         public static readonly string LOAD_FROM_CAMERA = "cam";
         private OpenCvSharp.Point[][] contours ;
@@ -63,22 +66,25 @@ namespace PalyaSzerkJatek
             {
                 case "img":
                     
-                frame = Cv2.ImRead("C:\\Users\\barth\\Pictures\\palya.jpg");
+                frame = Cv2.ImRead(ImgPath);
                     if (frame.Empty())
                         throw new NullReferenceException("Nem sikerült a képet betölteni");
                     break;
                 case "cam":
                    
                     cap = new VideoCapture();
-                    cap.Open(0);
+                    cap.Open(CameraIndex);
                     cap.Set(CaptureProperty.FrameWidth, CaptureWidth);
                     cap.Set(CaptureProperty.FrameHeight, CaptureHeight);
+                    CaptureWidth = cap.FrameWidth;
+                    CaptureHeight = cap.FrameHeight;
                     break;
             }
-            if(cap != null)
-            while (true)
+            bool success = false;
+            if (cap != null)
+            while (success)
             {
-            bool success = cap.Read(frame);
+            success = cap.Read(frame);
             if (success)
             {
            
@@ -166,6 +172,7 @@ namespace PalyaSzerkJatek
         /// </summary>
         public void stopCapture()
         {
+            cap.Dispose();
             camera.Abort();
         }
 
@@ -255,6 +262,14 @@ namespace PalyaSzerkJatek
                 new Point(rect.Left,rect.Bottom),
             };
             drawShape(pic, corners, new Scalar(40, 255, 0));
+        }
+
+        public void Dispose()
+        {
+            if(cap != null)
+                cap.Dispose();
+            if(camera != null)
+                camera.Abort();
         }
     }
 }

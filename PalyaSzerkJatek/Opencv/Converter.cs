@@ -16,6 +16,9 @@ namespace PalyaSzerkJatek
         {
             List<Wall> walls = new List<Wall>();
 
+            if (contours.Count() == 0)
+                return walls;
+
             if (contours == null)
                 throw new NullReferenceException("Contours nem lehet null");
 
